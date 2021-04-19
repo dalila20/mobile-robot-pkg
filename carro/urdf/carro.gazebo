@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<robot>
+
+  <!-- gazebo colors -->
+
+  <gazebo reference="base_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="top">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="front">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="back">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="mirror">
+    <material>Gazebo/White</material>
+  </gazebo>
+
+  <gazebo reference="center_sphere">
+    <material>Gazebo/White</material>
+  </gazebo>
+
+  <gazebo reference="right_front_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="left_front_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="right_back_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="left_back_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- gazebo plugins -->
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/carro</robotNamespace>
+    </plugin>
+
+    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+      <updateRate>100.0</updateRate>
+      <robotNamespace>/</robotNamespace>
+      <leftFrontJoint>left_front_wheel_joint</leftFrontJoint>
+      <rightFrontJoint>right_front_wheel_joint</rightFrontJoint>
+      <leftRearJoint>left_back_wheel_joint</leftRearJoint>
+      <rightRearJoint>right_back_wheel_joint</rightRearJoint>
+      <wheelSeparation>0.4</wheelSeparation>
+      <wheelDiameter>0.2</wheelDiameter>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <torque>20</torque>
+      <topicName>cmd_vel</topicName>
+      <broadcastTF>false</broadcastTF>
+    </plugin>
+  </gazebo>
+
+</robot>
