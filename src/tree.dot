@@ -1,0 +1,6 @@
+digraph KDL_Tree {
+  "left_back_wheel" -> "left_back_wheel_joint";
+  "left_front_wheel" -> "left_front_wheel_joint";
+  "right_back_wheel" -> "right_back_wheel_joint";
+  "right_front_wheel" -> "right_front_wheel_joint";
+}

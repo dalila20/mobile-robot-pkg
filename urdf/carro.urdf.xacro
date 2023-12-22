@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <robot name="carro" xmlns:xacro="http://ros.org/wiki/xacro">
  
-  <xacro:include filename="$(find carro)/urdf/carro.gazebo"/>
-  <xacro:include filename="$(find carro)/urdf/colors.urdf"/>
+  <xacro:include filename="$(find car_pkg)/urdf/carro.gazebo"/>
+  <xacro:include filename="$(find car_pkg)/urdf/colors.urdf"/>
 
   <!-- xacro for constants -->
 
@@ -17,8 +17,6 @@
   <xacro:property name="front_size" value="0.3 0.05 0.15"/>
   <xacro:property name="back_size" value="0.3 0.05 0.15"/>
 
-  <xacro:property name="sphere_radius" value="0.1"/>
-
   <xacro:property name="other_links_weight" value="1"/> 
 
   <!-- xacro for geometry -->
@@ -31,17 +29,9 @@
 
   <xacro:macro name="wheel_g" params="length radius">
     <geometry>
-      <cylinder length="${length}" radius="${radius}"/>
+      <mesh filename="package://car_pkg/meshes/wheel.dae" scale="0.7 0.7 0.7"/>
     </geometry>
   </xacro:macro>
-
-  <xacro:macro name="sphere_g" params="radius">
-    <geometry>
-      <sphere radius="${radius}"/>
-    </geometry>
-  </xacro:macro>
-
-  <!-- xacro for visual -->
 
   <xacro:macro name="box_visual" params="size color">
     <visual>
@@ -69,15 +59,15 @@
 
   <!-- xacro for link -->
 
-  <xacro:macro name="wheel_link" params="name">
+  <xacro:macro name="wheel_link" params="name rpy">
     <link name="${name}">
       <visual>
-        <origin rpy="1.57075 0 1.57075" xyz="0 0 0"/>
+        <origin rpy="${rpy}" xyz="0 0 0"/>
         <xacro:wheel_g length="${wheel_length}" radius="${wheel_radius}"/>
         <material name="black"/>
       </visual>
       <collision>
-        <origin rpy="1.57075 0 1.57075" xyz="0 0 0"/>
+        <origin rpy="${rpy}" xyz="0 0 0"/>
         <xacro:wheel_g length="${wheel_length}" radius="${wheel_radius}"/>
       </collision>
       <xacro:default_inertial mass="${wheel_weight}"/>
@@ -128,21 +118,10 @@
     <xacro:default_inertial mass="10"/>
   </link>
 
-  <xacro:wheel_link name="right_front_wheel"/>
-  <xacro:wheel_link name="left_front_wheel"/>
-  <xacro:wheel_link name="right_back_wheel"/>
-  <xacro:wheel_link name="left_back_wheel"/>
-
-  <link name="center_sphere">
-    <visual>
-      <xacro:sphere_g radius="${sphere_radius}"/>
-      <material name="white"/>
-    </visual>
-    <collision>
-      <xacro:sphere_g radius="${sphere_radius}"/>
-    </collision>
-    <xacro:default_inertial mass="4"/>
-  </link>
+  <xacro:wheel_link name="right_front_wheel" rpy="0 0 0"/>
+  <xacro:wheel_link name="left_front_wheel" rpy="0 0 3.14159265"/>
+  <xacro:wheel_link name="right_back_wheel" rpy="0 0 0"/>
+  <xacro:wheel_link name="left_back_wheel" rpy="0 0 3.14159265"/>
 
   <link name="top">
     <xacro:box_visual size="${top_size}" color="red"/>
@@ -174,13 +153,6 @@
   <xacro:wheel_joint name="left_front_wheel" position="-0.22 0.2 -0.1"/>
   <xacro:wheel_joint name="right_back_wheel" position="0.22 -0.2 -0.1"/>
   <xacro:wheel_joint name="left_back_wheel" position="-0.22 -0.2 -0.1"/>
-
-  <joint name="center_sphere_joint" type="continuous">
-    <axis rpy="0 0 0" xyz="0 0 1"/>
-    <parent link="base_link"/>
-    <child link="center_sphere"/>
-    <origin rpy="0 0 0" xyz="0 0 -0.1"/>
-  </joint>
 
   <xacro:box_joint name="top" position="0 0.2 0.12"/>
   <xacro:box_joint name="mirror" position="0 0.3 0.12"/>

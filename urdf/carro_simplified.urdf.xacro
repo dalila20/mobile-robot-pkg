@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<robot name="carro" xmlns:xacro="http://ros.org/wiki/xacro">
+ 
+  <xacro:include filename="$(find mobile_robot_pkg)/urdf/carro.gazebo"/>
+  <xacro:include filename="$(find mobile_robot_pkg)/urdf/colors.urdf"/>
+
+  <!-- xacro for constants -->
+
+  <xacro:property name="base_link_size" value="0.4 0.8 0.2"/>
+
+  <xacro:property name="wheel_length" value="0.05"/>
+  <xacro:property name="wheel_radius" value="0.1"/> 
+  <xacro:property name="wheel_weight" value="0.2"/>  
+
+  <xacro:property name="other_links_weight" value="0.5"/> 
+
+  <!-- xacro for geometry -->
+
+  <xacro:macro name="box_g" params="size">
+    <geometry>
+      <box size="${size}"/>
+    </geometry>
+  </xacro:macro>
+
+  <xacro:macro name="wheel_g" params="length radius">
+    <geometry>
+      <mesh filename="package://mobile_robot_pkg/meshes/wheel.dae" scale="0.7 0.7 0.7"/>
+    </geometry>
+  </xacro:macro>
+
+  <xacro:macro name="box_visual" params="size color">
+    <visual>
+      <xacro:box_g size="${size}"/>
+      <material name="${color}"/>
+    </visual>
+  </xacro:macro>
+
+  <!-- xacro for collision --> 
+
+  <xacro:macro name="box_collision" params="size">
+    <collision>
+      <xacro:box_g size="${size}"/>
+    </collision>
+  </xacro:macro>
+
+  <!-- xacro for inertial -->
+
+  <xacro:macro name="default_inertial" params="mass">
+    <inertial>
+      <mass value="${mass}"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- xacro for link -->
+
+  <xacro:macro name="wheel_link" params="name rpy">
+    <link name="${name}">
+      <visual>
+        <origin rpy="${rpy}" xyz="0 0 0"/>
+        <xacro:wheel_g length="${wheel_length}" radius="${wheel_radius}"/>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <origin rpy="${rpy}" xyz="0 0 0"/>
+        <xacro:wheel_g length="${wheel_length}" radius="${wheel_radius}"/>
+      </collision>
+      <xacro:default_inertial mass="${wheel_weight}"/>
+    </link>
+  </xacro:macro>
+
+  <!-- xacro for joint -->
+
+  <xacro:macro name="box_joint" params="name position">
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin rpy="0 0 0" xyz="${position}"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="wheel_joint" params="name position">
+    <joint name="${name}_joint" type="continuous">
+      <axis rpy="0 0 0" xyz="-1 0 0"/>
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin rpy="0 0 0" xyz="${position}"/>
+      <limit effort="10000" velocity="1000"/>
+      <joint_properties damping="1.0" friction="1.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- xacro for transmission -->
+
+  <xacro:macro name="default_transmission" params="joint">
+    <transmission name="${joint}_transmission">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${joint}_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${joint}_actuator">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>    
+    </transmission> 
+  </xacro:macro>
+
+  <!-- links -->
+
+  <link name="base_link">
+    <xacro:box_visual size="${base_link_size}" color="red"/>
+    <xacro:box_collision size="${base_link_size}"/>
+    <xacro:default_inertial mass="10"/>
+  </link>
+
+  <xacro:wheel_link name="right_front_wheel" rpy="0 0 0"/>
+  <xacro:wheel_link name="left_front_wheel" rpy="0 0 3.14159265"/>
+  <xacro:wheel_link name="right_back_wheel" rpy="0 0 0"/>
+  <xacro:wheel_link name="left_back_wheel" rpy="0 0 3.14159265"/>
+
+  <!-- joints -->
+
+  <xacro:wheel_joint name="right_front_wheel" position="0.22 0.2 -0.1"/> 
+  <xacro:wheel_joint name="left_front_wheel" position="-0.22 0.2 -0.1"/>
+  <xacro:wheel_joint name="right_back_wheel" position="0.22 -0.2 -0.1"/>
+  <xacro:wheel_joint name="left_back_wheel" position="-0.22 -0.2 -0.1"/>
+
+  <!-- transmissions -->
+
+  <xacro:default_transmission joint="right_front_wheel"/>
+  <xacro:default_transmission joint="left_front_wheel"/>
+  <xacro:default_transmission joint="right_back_wheel"/>
+  <xacro:default_transmission joint="left_back_wheel"/>
+
+</robot>
